@@ -1,17 +1,20 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_CONTAS 100
 #define MAX_MOVIMENTACOES 100
 
 // Definição da estrutura da conta bancária
 typedef struct {
+    char nome[30];
+    int numero_conta;
     char cpf[12];
     char senha[20];
     float saldo;
     char movimentacoes[MAX_MOVIMENTACOES][50];
     int qtdMovimentacoes;
-    int ativa;  // 0 = inativa, 1 = ativa
+    bool ativa;  
 } Conta;
 
 // Array de contas
@@ -71,9 +74,14 @@ void registrarConta() {
     }
 
     Conta novaConta;
+    printf("Digite o seu nome:");
+    fgets(novaConta.nome, 30, stdin);
+    strtok(novaConta.cpf, "\n"); // Remove o \n do final
+    
     printf("Digite o CPF (somente números): ");
     fgets(novaConta.cpf, 12, stdin);
     strtok(novaConta.cpf, "\n"); // Remove o \n do final
+    
 
     if (buscarConta(novaConta.cpf) != -1) {
         printf("Conta já registrada com esse CPF.\n");
@@ -86,17 +94,16 @@ void registrarConta() {
 
     novaConta.saldo = 0.0;
     novaConta.qtdMovimentacoes = 0;
-    novaConta.ativa = 0; // Conta ainda não ativada
 
     contas[qtdContas++] = novaConta;
-    printf("Conta registrada com sucesso!\n");
+    printf("%s sua conta foi registrada com sucesso!\n",novaConta.nome);
 
     ativarConta(&contas[qtdContas - 1]); // Ativa a conta imediatamente após o registro
 }
 
 // Função para ativar uma conta
 void ativarConta(Conta *conta) {
-    conta->ativa = 1; // Conta ativa
+    conta->ativa = true; // Conta ativa
     printf("Conta ativada com sucesso!\n");
 }
 
@@ -119,7 +126,7 @@ int acessarConta() {
 
     if (strcmp(contas[indiceConta].senha, senha) == 0) {
         if (contas[indiceConta].ativa) {
-            printf("Acesso concedido!\n");
+            printf("Bem-vindo!\n");
             menuConta(&contas[indiceConta]);
         } else {
             printf("Conta não ativada. Você deve ativá-la primeiro.\n");
@@ -218,7 +225,7 @@ void listarMovimentacoes(Conta *conta) {
 // Função para desativar a conta
 void desativarConta(Conta *conta) {
     if (conta->saldo == 0.0) {
-        conta->ativa = 0;
+        conta->ativa = false;
         printf("Conta desativada com sucesso!\n");
         
     } else {
