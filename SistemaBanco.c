@@ -29,7 +29,7 @@ void consultarSaldo(Conta *conta);
 void listarMovimentacoes(Conta *conta);
 void desativarConta(Conta *conta);
 int buscarConta(char *cpf);
-void ativarConta(Conta *conta); // Função para ativar a conta
+void ativarConta(Conta *conta);
 
 int main() {
     int opcao;
@@ -60,11 +60,7 @@ int main() {
 
 // Função para exibir o menu principal
 void menuPrincipal() {
-    printf("\n===== MENU PRINCIPAL =====\n");
-    printf("1. Acessar conta\n");
-    printf("2. Registrar conta\n");
-    printf("3. Sair\n");
-    printf("==========================\n");
+    printf("\n===== MENU PRINCIPAL =====\n1. Acessar conta\n2. Registrar conta\n3. Sair\n==========================\n");
 }
 
 // Função para registrar uma nova conta
@@ -138,15 +134,7 @@ int acessarConta() {
 void menuConta(Conta *conta) {
     int opcao;
     do {
-        printf("\n===== MENU DA CONTA =====\n");
-        printf("1. Depositar dinheiro\n");
-        printf("2. Sacar dinheiro\n");
-        printf("3. Consultar saldo\n");
-        printf("4. Listar movimentações\n");
-        printf("5. Desativar conta\n");
-        printf("6. Sair\n");
-        printf("=========================\n");
-        printf("Escolha uma opção: ");
+        printf("\n===== MENU DA CONTA =====\n1. Depositar dinheiro\n2. Sacar dinheiro\n3. Consultar saldo\n4. Listar movimentações\n5. Desativar conta\n6. Sair\n=========================\nEscolha uma opção: ");
         scanf("%d", &opcao);
         getchar();
 
@@ -165,6 +153,7 @@ void menuConta(Conta *conta) {
                 break;
             case 5:
                 desativarConta(conta);
+                opcao=6;
                 break;
             case 6:
                 printf("Saindo...\n");
@@ -231,6 +220,7 @@ void desativarConta(Conta *conta) {
     if (conta->saldo == 0.0) {
         conta->ativa = 0;
         printf("Conta desativada com sucesso!\n");
+        
     } else {
         printf("Não é possível desativar a conta. Saldo atual: R$ %.2f\n", conta->saldo);
     }
