@@ -33,6 +33,7 @@ void listarMovimentacoes(Conta *conta);
 void desativarConta(Conta *conta);
 int buscarConta(char *cpf);
 void ativarConta(Conta *conta);
+void mostrarDados(Conta *conta);
 
 int main() {
     int opcao;
@@ -81,6 +82,8 @@ void registrarConta() {
     printf("Digite o CPF (somente números): ");
     fgets(novaConta.cpf, 12, stdin);
     strtok(novaConta.cpf, "\n"); // Remove o \n do final
+    
+    
     
 
     if (buscarConta(novaConta.cpf) != -1) {
@@ -141,7 +144,7 @@ int acessarConta() {
 void menuConta(Conta *conta) {
     int opcao;
     do {
-        printf("\n===== MENU DA CONTA =====\n1. Depositar dinheiro\n2. Sacar dinheiro\n3. Consultar saldo\n4. Listar movimentações\n5. Desativar conta\n6. Sair\n=========================\nEscolha uma opção: ");
+        printf("\n===== MENU DA CONTA =====\n1. Depositar dinheiro\n2. Sacar dinheiro\n3. Consultar saldo\n4. Listar movimentações\n5. Mostrar seus dados\n6. Desativar conta\n7. Sair\n=========================\nEscolha uma opção: ");
         scanf("%d", &opcao);
         getchar();
 
@@ -159,16 +162,19 @@ void menuConta(Conta *conta) {
                 listarMovimentacoes(conta);
                 break;
             case 5:
-                desativarConta(conta);
-                opcao=6;
+                mostrarDados(conta);
                 break;
             case 6:
+                desativarConta(conta);
+                opcao=7;
+                break;
+            case 7:
                 printf("Saindo...\n");
                 break;
             default:
                 printf("Opção inválida!\n");
         }
-    } while (opcao != 6);
+    } while (opcao != 7);
 }
 
 // Função para depositar dinheiro na conta
@@ -243,3 +249,10 @@ int buscarConta(char *cpf) {
     }
     return -1; // Conta não encontrada
 }
+
+void mostrarDados(Conta *conta){
+    printf("Nome: %s\n",conta->nome);
+    printf("Número da conta: %d\n", conta->numero_conta);
+    printf("CPF: %s\n", conta->cpf);
+}
+
