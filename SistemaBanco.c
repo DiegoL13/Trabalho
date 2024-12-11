@@ -76,7 +76,7 @@ void registrarConta() {
     Conta novaConta;
     printf("Digite o seu nome:");
     fgets(novaConta.nome, 30, stdin);
-    strtok(novaConta.cpf, "\n"); // Remove o \n do final
+    strtok(novaConta.nome, "\n"); // Remove o \n do final
     
     printf("Digite o CPF (somente números): ");
     fgets(novaConta.cpf, 12, stdin);
@@ -126,7 +126,7 @@ int acessarConta() {
 
     if (strcmp(contas[indiceConta].senha, senha) == 0) {
         if (contas[indiceConta].ativa) {
-            printf("Bem-vindo!\n");
+            printf("Bem-vindo %s!\n",contas[indiceConta].nome);
             menuConta(&contas[indiceConta]);
         } else {
             printf("Conta não ativada. Você deve ativá-la primeiro.\n");
