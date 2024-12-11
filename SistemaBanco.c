@@ -20,6 +20,7 @@ typedef struct {
 // Array de contas
 Conta contas[MAX_CONTAS];
 int qtdContas = 0; // Quantidade de contas registradas
+int numero_conta_global=1; // Variável global para definir número da conta
 
 // Protótipos das funções
 void menuPrincipal();
@@ -84,7 +85,7 @@ void registrarConta() {
     strtok(novaConta.cpf, "\n"); // Remove o \n do final
     
     
-    
+    novaConta.numero_conta = numero_conta_global++;
 
     if (buscarConta(novaConta.cpf) != -1) {
         printf("Conta já registrada com esse CPF.\n");
@@ -250,6 +251,7 @@ int buscarConta(char *cpf) {
     return -1; // Conta não encontrada
 }
 
+// Função para mostrar os dados do usuário
 void mostrarDados(Conta *conta){
     printf("Nome: %s\n",conta->nome);
     printf("Número da conta: %d\n", conta->numero_conta);
