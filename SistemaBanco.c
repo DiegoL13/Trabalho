@@ -29,6 +29,7 @@ int acessarConta();
 void menuConta(Conta *conta);
 void depositar(Conta *conta);
 void sacar(Conta *conta);
+void transferir(Conta *conta);
 void consultarSaldo(Conta *conta);
 void listarMovimentacoes(Conta *conta);
 void desativarConta(Conta *conta);
@@ -88,8 +89,7 @@ void registrarConta() {
     printf("Digite o CPF (somente numeros): ");
     fgets(novaConta.cpf, 12, stdin);
     strtok(novaConta.cpf, "\n"); 
-    
-    
+
     novaConta.numero_conta = numero_conta_global++;
 
     if (buscarConta(novaConta.cpf) != -1) {
@@ -151,7 +151,7 @@ int acessarConta() {
 void menuConta(Conta *conta) {
     int opcao;
     do {
-        printf("\n===== MENU DA CONTA =====\n1. Depositar dinheiro\n2. Sacar dinheiro\n3. Consultar saldo\n4. Listar movimentacoes\n5. Mostrar seus dados\n6. Desativar conta\n7. Sair\n=========================\nEscolha uma opcao: ");
+        printf("\n===== MENU DA CONTA =====\n1. Depositar dinheiro\n2. Sacar dinheiro\n3. Transferir\n4. Consultar saldo\n5. Listar movimentacoes\n6. Mostrar dados\n7. Desativar conta\n8. Sair\n=========================\nEscolha uma opcao: ");
         scanf("%d", &opcao);
         getchar();
 
@@ -163,27 +163,30 @@ void menuConta(Conta *conta) {
                 sacar(conta);
                 break;
             case 3:
-                consultarSaldo(conta);
+                transferir(conta);
                 break;
             case 4:
-                listarMovimentacoes(conta);
+            	consultarSaldo(conta);
                 break;
             case 5:
-                mostrarDados(conta);
+            	listarMovimentacoes(conta);
                 break;
             case 6:
-                desativarConta(conta);
-                if (conta->saldo != 0){
-					opcao=7;
-				}
+            	mostrarDados(conta);
                 break;
             case 7:
-                printf("Saindo...\n");
+            	desativarConta(conta);
+                if (conta->saldo != 0){
+					opcao=8;
+				}
                 break;
+            case 8:
+          	    printf("Saindo...\n");
+          	    break;
             default:
                 printf("Opcao invalida!\n");
         }
-    } while (opcao != 7);
+    } while (opcao != 8);
 }
 
 // Função para depositar dinheiro na conta
@@ -197,7 +200,7 @@ void depositar(Conta *conta) {
 	        conta->saldo += valor;
 	        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Deposito de R$ %.2f", valor);
 	        conta->qtdMovimentacoes++;
-	        printf("Deposito realizado com sucesso!\n");
+	        printf("Deposito realizado com sucesso!\n");printf("Saindo...\n");
         }
 		else {
         	printf("Valor inválido para deposito.\n");
@@ -229,6 +232,54 @@ void sacar(Conta *conta) {
 		printf("Nao e possivel movimentar uma conta desativada.");
 	}
 }
+// Função para transferir dinheiro entre contas
+void transferir(Conta *conta) {
+    char cpf_destino[12];
+    float valor;
+
+    // Solicita o CPF da conta de destino
+    printf("Digite o CPF da conta de destino: ");
+    fgets(cpf_destino, 12, stdin);
+    strtok(cpf_destino, "\n");
+
+    // Busca a conta de destino
+    int indiceContaDestino = buscarConta(cpf_destino);
+    if (indiceContaDestino == -1) {
+        printf("Conta de destino não encontrada.\n");
+        return;
+    }
+
+    Conta *contaDestino = &contas[indiceContaDestino];
+
+    // Verifica se a conta de destino está ativa
+    if (!contaDestino->ativa) {
+        printf("A conta de destino não está ativa.\n");
+        return;
+    }
+
+    // Solicita o valor da transferência
+    printf("Digite o valor para transferir: R$ ");
+    scanf("%f", &valor);
+    getchar();
+
+    // Verifica se o valor é positivo e se há saldo suficiente na conta de origem
+    if (valor > 0 && conta->saldo >= valor) {
+        conta->saldo -= valor;
+        contaDestino->saldo += valor;
+
+        // Registra a movimentação nas duas contas
+        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Transferencia de R$ %.2f para CPF %s", valor, cpf_destino);
+        conta->qtdMovimentacoes++;
+        
+        sprintf(contaDestino->movimentacoes[contaDestino->qtdMovimentacoes], "Transferencia recebida de R$ %.2f de CPF %s", valor, conta->cpf);
+        contaDestino->qtdMovimentacoes++;
+
+        printf("Transferência de R$ %.2f para %s realizada com sucesso!\n", valor, contaDestino->nome);
+    } else {
+        printf("Saldo insuficiente ou valor inválido para transferência.\n");
+    }
+}
+
 
 // Função para consultar o saldo da conta
 void consultarSaldo(Conta *conta) {
