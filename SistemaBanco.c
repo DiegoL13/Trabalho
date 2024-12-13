@@ -39,6 +39,14 @@ void mostrarDados(Conta *conta);
 void carregarContas();
 void salvarContas();
 
+void limparBuffer(){
+	char c;
+	do{
+		c = getchar();
+		
+	}while( c != '\n');
+}
+
 int main() {
 	carregarContas();
     int opcao;
@@ -98,6 +106,7 @@ void registrarConta() {
     }
 
     printf("Digite uma senha: ");
+    limparBuffer();
     fgets(novaConta.senha, 20, stdin);
     strtok(novaConta.senha, "\n"); 
 
