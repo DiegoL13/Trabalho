@@ -35,8 +35,11 @@ void desativarConta(Conta *conta);
 int buscarConta(char *cpf);
 void ativarConta(Conta *conta);
 void mostrarDados(Conta *conta);
+void carregarContas();
+void salvarContas();
 
 int main() {
+	carregarContas();
     int opcao;
 
     do {
@@ -59,6 +62,8 @@ int main() {
                 printf("Opcao invalida!\n");
         }
     } while (opcao != 3);
+    
+    salvarContas();
 
     return 0;
 }
@@ -247,7 +252,7 @@ void desativarConta(Conta *conta) {
     if (conta->saldo == 0.0) {
         conta->ativa = false;
         printf("Conta desativada com sucesso!\n");
-        
+        #define FILE_NAME "contas.txt"
     } else {
         printf("Não e possivel desativar a conta. Saldo atual: R$ %.2f\n", conta->saldo);
     }
@@ -269,4 +274,74 @@ void mostrarDados(Conta *conta){
     printf("Nome: %s\n",conta->nome);
     printf("Numero da conta: %d\n", conta->numero_conta);
     printf("CPF: %s\n", conta->cpf);
+}
+
+// Função para salvar as contas no arquivo txt
+void salvarContas() {
+	int i;
+	int j;
+    FILE *file = fopen("contas.txt", "w");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo para salvar os dados.\n");
+        return;
+    }
+
+    // Salva a quantidade de contas registradas e o número da conta global
+    fprintf(file, "%d\n", qtdContas);
+    fprintf(file, "%d\n", numero_conta_global);
+
+    for (i = 0; i < qtdContas; i++) {
+        Conta conta = contas[i];
+        fprintf(file, "%s\n", conta.nome);
+        fprintf(file, "%d\n", conta.numero_conta);
+        fprintf(file, "%s\n", conta.cpf);
+        fprintf(file, "%s\n", conta.senha);
+        fprintf(file, "%.2f\n", conta.saldo);
+        fprintf(file, "%d\n", conta.qtdMovimentacoes);
+        for (j = 0; j < conta.qtdMovimentacoes; j++) {
+            fprintf(file, "%s\n", conta.movimentacoes[j]);
+        }
+        fprintf(file, "%d\n", conta.ativa);
+    }
+
+    fclose(file);
+    printf("Dados das contas salvos com sucesso.\n");
+}
+
+// Função para carregar as contas registradas no arquivo txt
+void carregarContas() {
+	int i;
+	int j;
+    FILE *file = fopen("contas.txt", "r");
+    if (file == NULL) {
+        printf("Nenhum dado de conta encontrado para carregar.\n");
+        return;
+    }
+
+    // Carrega a quantidade de contas registradas e o número da conta global
+    fscanf(file, "%d\n", &qtdContas);
+    fscanf(file, "%d\n", &numero_conta_global);
+
+    for (i = 0; i < qtdContas; i++) {
+        Conta conta;
+        fgets(conta.nome, 30, file);
+        strtok(conta.nome, "\n");
+        fscanf(file, "%d\n", &conta.numero_conta);
+        fgets(conta.cpf, 12, file);
+        strtok(conta.cpf, "\n");
+        fgets(conta.senha, 20, file);
+        strtok(conta.senha, "\n");
+        fscanf(file, "%f\n", &conta.saldo);
+        fscanf(file, "%d\n", &conta.qtdMovimentacoes);
+        for (j = 0; j < conta.qtdMovimentacoes; j++) {
+            fgets(conta.movimentacoes[j], 50, file);
+            strtok(conta.movimentacoes[j], "\n");
+        }
+        fscanf(file, "%d\n", &conta.ativa);
+
+        contas[i] = conta;
+    }
+
+    fclose(file);
+    printf("Dados das contas carregados com sucesso.\n");
 }
