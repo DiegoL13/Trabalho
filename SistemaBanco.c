@@ -1,9 +1,9 @@
+
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 
-#define MAX_CONTAS 100
-#define MAX_MOVIMENTACOES 100
+#define MAX 100
 
 // Definição da estrutura da conta bancária
 typedef struct {
@@ -12,13 +12,13 @@ typedef struct {
     char cpf[12];
     char senha[20];
     float saldo;
-    char movimentacoes[MAX_MOVIMENTACOES][50];
+    char movimentacoes[MAX][50];
     int qtdMovimentacoes;
     bool ativa;  
 } Conta;
 
-// Array de contas
-Conta contas[MAX_CONTAS];
+
+Conta contas[MAX]; // Array de contas
 int qtdContas = 0; // Quantidade de contas registradas
 int numero_conta_global=1; // Variável global para definir número da conta
 
@@ -41,7 +41,7 @@ int main() {
 
     do {
         menuPrincipal();
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
         getchar(); // Limpa o buffer de entrada
 
@@ -56,7 +56,7 @@ int main() {
                 printf("Saindo...\n");
                 break;
             default:
-                printf("Opção inválida!\n");
+                printf("Opcao invalida!\n");
         }
     } while (opcao != 3);
 
@@ -70,7 +70,7 @@ void menuPrincipal() {
 
 // Função para registrar uma nova conta
 void registrarConta() {
-    if (qtdContas >= MAX_CONTAS) {
+    if (qtdContas >= MAX) {
         printf("Limite de contas registradas atingido!\n");
         return;
     }
@@ -80,24 +80,25 @@ void registrarConta() {
     fgets(novaConta.nome, 30, stdin);
     strtok(novaConta.nome, "\n"); // Remove o \n do final
     
-    printf("Digite o CPF (somente números): ");
+    printf("Digite o CPF (somente numeros): ");
     fgets(novaConta.cpf, 12, stdin);
-    strtok(novaConta.cpf, "\n"); // Remove o \n do final
+    strtok(novaConta.cpf, "\n"); 
     
     
     novaConta.numero_conta = numero_conta_global++;
 
     if (buscarConta(novaConta.cpf) != -1) {
-        printf("Conta já registrada com esse CPF.\n");
+        printf("Conta ja registrada com esse CPF.\n");
         return;
     }
 
     printf("Digite uma senha: ");
     fgets(novaConta.senha, 20, stdin);
-    strtok(novaConta.senha, "\n"); // Remove o \n do final
+    strtok(novaConta.senha, "\n"); 
 
     novaConta.saldo = 0.0;
     novaConta.qtdMovimentacoes = 0;
+    novaConta.ativa = false;
 
     contas[qtdContas++] = novaConta;
     printf("%s sua conta foi registrada com sucesso!\n",novaConta.nome);
@@ -120,7 +121,7 @@ int acessarConta() {
 
     int indiceConta = buscarConta(cpf);
     if (indiceConta == -1) {
-        printf("Conta não encontrada.\n");
+        printf("Conta nao encontrada.\n");
         return -1;
     }
 
@@ -133,7 +134,7 @@ int acessarConta() {
             printf("Bem-vindo %s!\n",contas[indiceConta].nome);
             menuConta(&contas[indiceConta]);
         } else {
-            printf("Conta não ativada. Você deve ativá-la primeiro.\n");
+            printf("Conta nao ativada. Voce deve ativa-la primeiro.\n");
         }
     } else {
         printf("Senha incorreta.\n");
@@ -145,7 +146,7 @@ int acessarConta() {
 void menuConta(Conta *conta) {
     int opcao;
     do {
-        printf("\n===== MENU DA CONTA =====\n1. Depositar dinheiro\n2. Sacar dinheiro\n3. Consultar saldo\n4. Listar movimentações\n5. Mostrar seus dados\n6. Desativar conta\n7. Sair\n=========================\nEscolha uma opção: ");
+        printf("\n===== MENU DA CONTA =====\n1. Depositar dinheiro\n2. Sacar dinheiro\n3. Consultar saldo\n4. Listar movimentacoes\n5. Mostrar seus dados\n6. Desativar conta\n7. Sair\n=========================\nEscolha uma opcao: ");
         scanf("%d", &opcao);
         getchar();
 
@@ -167,13 +168,15 @@ void menuConta(Conta *conta) {
                 break;
             case 6:
                 desativarConta(conta);
-                opcao=7;
+                if (conta->saldo != 0){
+					opcao=7;
+				}
                 break;
             case 7:
                 printf("Saindo...\n");
                 break;
             default:
-                printf("Opção inválida!\n");
+                printf("Opcao invalida!\n");
         }
     } while (opcao != 7);
 }
@@ -181,35 +184,45 @@ void menuConta(Conta *conta) {
 // Função para depositar dinheiro na conta
 void depositar(Conta *conta) {
     float valor;
-    printf("Digite o valor para depósito: R$ ");
-    scanf("%f", &valor);
-    getchar();
-
-    if (valor > 0) {
-        conta->saldo += valor;
-        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Depósito de R$ %.2f", valor);
-        conta->qtdMovimentacoes++;
-        printf("Depósito realizado com sucesso!\n");
-    } else {
-        printf("Valor inválido para depósito.\n");
-    }
+    if(conta->ativa==true){
+		printf("Digite o valor para deposito: R$ ");
+		scanf("%f", &valor);
+    	getchar();
+	  	if (valor > 0) {
+	        conta->saldo += valor;
+	        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Deposito de R$ %.2f", valor);
+	        conta->qtdMovimentacoes++;
+	        printf("Deposito realizado com sucesso!\n");
+        }
+		else {
+        	printf("Valor inválido para deposito.\n");
+ 		}
+	} 
+	else{
+		printf("Nao e possivel movimentar uma conta desativada.");
+	}
 }
 
 // Função para sacar dinheiro da conta
 void sacar(Conta *conta) {
     float valor;
-    printf("Digite o valor para saque: R$ ");
-    scanf("%f", &valor);
-    getchar();
-
-    if (valor > 0 && valor <= conta->saldo) {
-        conta->saldo -= valor;
-        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Saque de R$ %.2f", valor);
-        conta->qtdMovimentacoes++;
-        printf("Saque realizado com sucesso!\n");
-    } else {
-        printf("Saldo insuficiente ou valor inválido.\n");
-    }
+    if(conta->ativa==true){
+	    printf("Digite o valor para saque: R$ ");
+	    scanf("%f", &valor);
+	    getchar();
+	    if (valor > 0 && valor <= conta->saldo) {
+	        conta->saldo -= valor;
+	        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Saque de R$ %.2f", valor);
+	        conta->qtdMovimentacoes++;
+	        printf("Saque realizado com sucesso!\n");
+	    } 
+		else {
+	        printf("Saldo insuficiente ou valor invalido.\n");
+	    }
+	}
+	else{
+		printf("Nao e possivel movimentar uma conta desativada.");
+	}
 }
 
 // Função para consultar o saldo da conta
@@ -219,13 +232,13 @@ void consultarSaldo(Conta *conta) {
 
 // Função para listar todas as movimentações
 void listarMovimentacoes(Conta *conta) {
-    printf("\n=== Movimentações ===\n");
+    printf("\n=== Movimentacoes ===\n");
     int i;
     for (i = 0; i < conta->qtdMovimentacoes; i++) {
         printf("%d. %s\n", i + 1, conta->movimentacoes[i]);
     }
     if (conta->qtdMovimentacoes == 0) {
-        printf("Nenhuma movimentação registrada.\n");
+        printf("Nenhuma movimentacao registrada.\n");
     }
 }
 
@@ -236,7 +249,7 @@ void desativarConta(Conta *conta) {
         printf("Conta desativada com sucesso!\n");
         
     } else {
-        printf("Não é possível desativar a conta. Saldo atual: R$ %.2f\n", conta->saldo);
+        printf("Não e possivel desativar a conta. Saldo atual: R$ %.2f\n", conta->saldo);
     }
 }
 
@@ -254,7 +267,6 @@ int buscarConta(char *cpf) {
 // Função para mostrar os dados do usuário
 void mostrarDados(Conta *conta){
     printf("Nome: %s\n",conta->nome);
-    printf("Número da conta: %d\n", conta->numero_conta);
+    printf("Numero da conta: %d\n", conta->numero_conta);
     printf("CPF: %s\n", conta->cpf);
 }
-
