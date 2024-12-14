@@ -48,7 +48,7 @@ void limparBuffer(){
 }
 
 int main() {
-	carregarContas();
+    carregarContas();
     int opcao;
 
     do {
