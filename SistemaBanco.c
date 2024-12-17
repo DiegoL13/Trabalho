@@ -295,28 +295,31 @@ void transferir(Conta *conta) {
         return;
     }
 
-    // Solicita o valor da transferência
-    printf("Digite o valor para transferir: R$ ");
-    scanf("%f", &valor);
-    getchar();
-
-    // Verifica se o valor é positivo e se há saldo suficiente na conta de origem
-    if (valor > 0 && conta->saldo >= valor) {
-        conta->saldo -= valor;
-        contaDestino->saldo += valor;
-
-        // Registra a movimentação nas duas contas
-        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Transferencia de R$ %.2f para CPF %s", valor, cpf_destino);
-        conta->qtdMovimentacoes++;
-        
-        sprintf(contaDestino->movimentacoes[contaDestino->qtdMovimentacoes], "Transferencia recebida de R$ %.2f de CPF %s", valor, conta->cpf);
-        contaDestino->qtdMovimentacoes++;
+	
+	else{
 		if (contaDestino->cpf != conta->cpf){
-			printf("Transferencia de R$ %.2f para %s realizada com sucesso!\n", valor, contaDestino->nome);
-		}
-    } else {
-        printf("Saldo insuficiente ou valor invalido para transferencia.\n");
-    }
+			// Solicita o valor da transferência
+		    printf("Digite o valor para transferir: R$ ");
+		    scanf("%f", &valor);
+		    getchar();
+			// Verifica se o valor é positivo e se há saldo suficiente na conta de origem
+		    if (valor > 0 && conta->saldo >= valor) {
+		        conta->saldo -= valor;
+		        contaDestino->saldo += valor;
+			   	printf("Transferencia de R$ %.2f para %s realizada com sucesso!\n", valor, contaDestino->nome);
+			   	// Registra a movimentação nas duas contas
+		        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Transferencia de R$ %.2f para CPF %s", valor, cpf_destino);
+		        conta->qtdMovimentacoes++;
+		        
+		        sprintf(contaDestino->movimentacoes[contaDestino->qtdMovimentacoes], "Transferencia recebida de R$ %.2f de CPF %s", valor, conta->cpf);
+		        contaDestino->qtdMovimentacoes++;		   	
+           }else{
+			   printf("Saldo insuficiente ou valor invalido.\n");
+		   }			
+	    }else{
+        	printf("Nao e possivel fazer transferencia para si mesmo.\n");
+    	}		
+    } 
 }
 
 
