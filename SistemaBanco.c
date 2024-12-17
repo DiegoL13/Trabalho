@@ -1,7 +1,5 @@
-
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 
 #define MAX 100
 
@@ -14,7 +12,7 @@ typedef struct {
     float saldo;
     char movimentacoes[MAX][50];
     int qtdMovimentacoes;
-    bool ativa;  
+    int ativa;  
 } Conta;
 
 
@@ -38,7 +36,6 @@ void ativarConta(Conta *conta);
 void mostrarDados(Conta *conta);
 void carregarContas();
 void salvarContas();
-
 void limparBuffer(){
 	char c;
 	do{
@@ -96,8 +93,8 @@ void registrarConta() {
     strtok(novaConta.nome, "\n"); // Remove o \n do final
     
      do {
-	printf("Digite o CPF (somente numeros): ");
-	fgets(novaConta.cpf, 12, stdin);
+		printf("Digite o CPF (somente numeros): ");
+		scanf("%s",novaConta.cpf);
     	strtok(novaConta.cpf, "\n"); 
 		tamanho = strlen(novaConta.cpf);
 		if(tamanho!=11){
@@ -125,12 +122,12 @@ void registrarConta() {
     contas[qtdContas++] = novaConta;
     printf("%s sua conta foi registrada com sucesso!\n",novaConta.nome);
 
-    ativarConta(&contas[qtdContas - 1]); // Ativa a conta imediatamente após o registro
+    ativarConta(&contas[qtdContas - 1]); // Ativa a conta após o registro
 }
 
 // Função para ativar uma conta
 void ativarConta(Conta *conta) {
-    conta->ativa = 1; // Conta ativa
+    conta->ativa = 1;
 }
 
 // Função para acessar uma conta
@@ -310,7 +307,6 @@ void transferir(Conta *conta) {
 			   	// Registra a movimentação nas duas contas
 		        sprintf(conta->movimentacoes[conta->qtdMovimentacoes], "Transferencia de R$ %.2f para CPF %s", valor, cpf_destino);
 		        conta->qtdMovimentacoes++;
-		        
 		        sprintf(contaDestino->movimentacoes[contaDestino->qtdMovimentacoes], "Transferencia recebida de R$ %.2f de CPF %s", valor, conta->cpf);
 		        contaDestino->qtdMovimentacoes++;		   	
            }else{
@@ -332,12 +328,13 @@ void consultarSaldo(Conta *conta) {
 void listarMovimentacoes(Conta *conta) {
     printf("\n===== Movimentacoes =====\n");
     int i;
-    for (i = 0; i < conta->qtdMovimentacoes; i++) {
-        printf("%d. %s\n", i + 1, conta->movimentacoes[i]);
-    }
     if (conta->qtdMovimentacoes == 0) {
         printf("Nenhuma movimentacao registrada.\n");
-    }
+    }else{
+		for (i = 0; i < conta->qtdMovimentacoes; i++) {
+        	printf("%d. %s\n", i + 1, conta->movimentacoes[i]);
+    	}
+	}
 }
 
 // Função para desativar a conta
@@ -370,8 +367,7 @@ void mostrarDados(Conta *conta){
 
 // Função para salvar as contas no arquivo txt
 void salvarContas() {
-    int i;
-    int j;
+    int i, j;
     FILE *file = fopen("contas.txt", "w");
     if (file == NULL) {
         printf("Erro ao abrir o arquivo para salvar os dados.\n");
@@ -402,8 +398,7 @@ void salvarContas() {
 
 // Função para carregar as contas registradas no arquivo txt
 void carregarContas() {
-    int i;
-    int j;
+    int i, j;
     FILE *file = fopen("contas.txt", "r");
     if (file == NULL) {
         printf("Nenhum dado de conta encontrado para carregar.\n");
