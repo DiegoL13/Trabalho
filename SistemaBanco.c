@@ -418,6 +418,7 @@ void carregarContas() {
         fscanf(file, "%d\n", &conta.numero_conta);
         fgets(conta.cpf, 12, file);
         strtok(conta.cpf, "\n");
+        fgetc(file);
         fgets(conta.senha, 20, file);
         strtok(conta.senha, "\n");
         fscanf(file, "%f\n", &conta.saldo);
@@ -427,7 +428,6 @@ void carregarContas() {
             strtok(conta.movimentacoes[j], "\n");
         }
         fscanf(file, "%d\n", &conta.ativa);
-
         contas[i] = conta;
     }
 
